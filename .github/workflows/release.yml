@@ -163,4 +163,4 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || github.token }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
