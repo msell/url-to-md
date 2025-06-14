@@ -3,40 +3,38 @@ name: Release Binaries
 on:
   push:
     tags:
-      - "v*" # Runs on version tags like v1.0.0
+      - "v*"
 
 jobs:
   build:
-    name: Build and Upload Binaries
-    runs-on: ubuntu-latest
-
     strategy:
       matrix:
         include:
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-          - target: x86_64-apple-darwin
-            os: macos-latest
-          - target: x86_64-pc-windows-msvc
-            os: windows-latest
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            ext: ""
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            ext: ""
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            ext: ".exe"
 
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+      - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          target: ${{ matrix.target }}
           override: true
 
       - name: Build binary
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Upload binary to release
+      - name: Upload binary
         uses: softprops/action-gh-release@v2
         with:
-          files: target/${{ matrix.target }}/release/url_to_md${{ matrix.target == 'x86_64-pc-windows-msvc' && '.exe' || '' }}
+          files: target/${{ matrix.target }}/release/url_to_md${{ matrix.ext }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
