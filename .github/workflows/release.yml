@@ -141,6 +141,16 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         
+      - name: Debug token availability
+        run: |
+          if [ -z "${{ secrets.PAT_TOKEN }}" ]; then
+            echo "❌ PAT_TOKEN secret is not set!"
+            echo "Please add your Personal Access Token as a repository secret named 'PAT_TOKEN'"
+            exit 1
+          else
+            echo "✅ PAT_TOKEN secret is available"
+          fi
+        
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -153,4 +163,4 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || github.token }}
