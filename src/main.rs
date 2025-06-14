@@ -1,11 +1,10 @@
 use reqwest::blocking::get;
 use select::document::Document;
-use select::predicate::{Attr, Name};
+use select::predicate::Name;
 use slug::slugify;
 use std::env;
 use std::fs;
 use std::path::Path;
-use url::Url;
 
 fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
@@ -41,7 +40,7 @@ fn fetch_and_convert(url: &str, output_dir: &Path) -> Result<std::path::PathBuf,
         .find(Name("article"))
         .next()
         .map(|n| n.html())
-        .unwrap_or_else(|| document.html());
+        .unwrap_or_else(|| resp.clone());
 
     let markdown = html2md::parse_html(&article_html);
 
